@@ -100,6 +100,10 @@ body{background:var(--bg);color:var(--text);
 /* CALENDAR */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;
   margin:22px 0 10px}
+.cal-mode-toggle{display:flex;gap:8px;justify-content:center;margin:0 0 12px}
+.cal-mode-btn{padding:8px 20px;border-radius:20px;border:1px solid var(--border);
+  background:var(--surface);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.cal-mode-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .cal-title{font-weight:700;font-size:17px}
 .cal-arrow{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);
   background:var(--surface);font-size:20px;color:var(--text);cursor:pointer}
@@ -108,6 +112,7 @@ body{background:var(--bg);color:var(--text);
   padding:6px 0}
 .cal-day{aspect-ratio:1;border-radius:10px;border:0;background:none;
   font-size:14px;cursor:pointer;color:var(--text);position:relative}
+.cal-solar{display:block;font-size:9px;color:var(--muted);line-height:1.2}
 .cal-day.other{color:#c9bda9}
 .cal-day.has-event{background:#efe4cd;font-weight:700}
 .cal-day.today{outline:2px solid var(--accent);font-weight:800}
@@ -201,7 +206,6 @@ body{background:var(--bg);color:var(--text);
   .event-detail{font-size:11px}
   .event-end{min-width:104px}
   .event-end strong{font-size:51px}
-  .mobile-fab{display:none}
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -238,6 +242,10 @@ body{background:var(--bg);color:var(--text);
       <button id="calPrev" class="cal-arrow">‹</button>
       <div id="calTitle" class="cal-title"></div>
       <button id="calNext" class="cal-arrow">›</button>
+    </div>
+    <div class="cal-mode-toggle">
+      <button id="btnSolarCal" class="cal-mode-btn active" onclick="setCalMode(false)">Dương lịch</button>
+      <button id="btnLunarCal" class="cal-mode-btn" onclick="setCalMode(true)">Âm lịch</button>
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <div id="calDayList"></div>
