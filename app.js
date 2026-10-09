@@ -97,6 +97,46 @@ function lunarMonthLength(lMonth, lYear){
   var start = getNewMoonDay(k+off,TZ), next = getNewMoonDay(k+off+1,TZ);
   return next-start;
 }
+function solarToLunar(dd, mm, yy){
+  var dayNumber = jdFromDate(dd, mm, yy);
+  var k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+  var monthStart = getNewMoonDay(k + 1, TZ);
+  if (monthStart > dayNumber) monthStart = getNewMoonDay(k, TZ);
+  var a11 = getLunarMonth11(yy, TZ);
+  var b11 = monthStart;
+  var lunarYear;
+  if (a11 >= b11) {
+    lunarYear = yy;
+    a11 = getLunarMonth11(yy - 1, TZ);
+  } else {
+    lunarYear = yy + 1;
+    b11 = getLunarMonth11(yy + 1, TZ);
+  }
+  var lunarDay = dayNumber - monthStart + 1;
+  var diff = INT((monthStart - a11) / 29.530588853);
+  var lunarLeap = 0;
+  var lunarMonth = diff + 11;
+  if (b11 - a11 > 365) {
+    var leapMonthDiff = INT((monthStart - b11) / 29.530588853);
+    if (leapMonthDiff >= 0) {
+      lunarMonth = leapMonthDiff + 11;
+      if (leapMonthDiff === 0) {
+        // Kiểm tra tháng nhuận: so sánh độ dài
+        var prevStart = getNewMoonDay(k - 1, TZ);
+        if (monthStart - prevStart === 30) lunarLeap = 0;
+      }
+    }
+  }
+  if (lunarMonth > 12) lunarMonth -= 12;
+  if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+  return {day: lunarDay, month: lunarMonth, year: lunarYear, leap: lunarLeap};
+}
+function fmtLunar(dd, mm, yy){
+  try {
+    var l = solarToLunar(dd, mm, yy);
+    return l.day + '/' + l.month + (l.leap ? ' nhuận' : '') + ' âm lịch';
+  } catch(e){ return ''; }
+}
 
 /* ---------- Danh sách ngày lễ Việt Nam ---------- */
 // type: 'solar' | 'lunar'
@@ -306,7 +346,21 @@ function render(){
   if (!state.ready) return;
   var events=computeEvents();
   renderHero(events);
-  if (state.view==='list') renderList(events); else renderCal(events);
+  if (state.view==='list') renderList(events);
+  else if (state.lunarCal) renderLunarCal(events);
+  else renderCal(events);
+}
+function setCalMode(lunar){
+  state.lunarCal=lunar;
+  $('btnSolarCal').classList.toggle('active', !lunar);
+  $('btnLunarCal').classList.toggle('active', lunar);
+  if (lunar && state.lunarYear==null){
+    var now=new Date();
+    var l=solarToLunar(now.getDate(), now.getMonth()+1, now.getFullYear());
+    state.lunarYear=l.year; state.lunarMonth=l.month;
+  }
+  state.calSelected=null;
+  render();
 }
 
 function renderHero(events){
@@ -338,7 +392,8 @@ function resolveColor(c){
 function rowHTML(e){
   var n=e.days===0?'🎉':(e.days<0?-e.days:e.days);
   var unit=e.days===0?'hôm nay!':(e.days<0?'ngày đã qua':'ngày nữa');
-  var dateLine=fmtDate(e.date)+(e.lunar?'<span class="lunar-date">'+esc(e.lunar)+'</span>':'');
+  var lunarStr=fmtLunar(e.date.getDate(), e.date.getMonth()+1, e.date.getFullYear());
+  var dateLine=fmtDate(e.date)+(e.lunar?'<span class="lunar-date">'+esc(e.lunar)+'</span>':'<span class="lunar-date">'+lunarStr+'</span>');
   var numColor=resolveColor(e.color||(e.raw&&e.raw.color));
   return '<article class="event-row" data-key="'+e.key+'">'+
     '<div class="event-copy">'+
@@ -442,6 +497,55 @@ function renderCal(events){
         openAdd(iso);
       } else {
         renderCal(events);
+      }
+    });
+  });
+  var dl=$('calDayList');
+  if (state.calSelected && byDay[state.calSelected]){
+    dl.innerHTML=byDay[state.calSelected].map(rowHTML).join('');
+    bindRows(dl, events);
+  } else dl.innerHTML='<div class="empty">Chạm vào ngày có chấm để xem sự kiện.</div>';
+}
+function renderLunarCal(events){
+  var ly=state.lunarYear, lm=state.lunarMonth;
+  $('listView').classList.add('hidden');
+  $('calView').classList.remove('hidden');
+  $('calTitle').textContent='Tháng '+lm+' năm '+ly+' âm lịch';
+  // Tính ngày dương của mùng 1 tháng âm
+  var solar=lunarToSolar(1, lm, ly, false, TZ);
+  var sY=solar[2], sM=solar[1], sD=solar[0];
+  var firstDow=new Date(sY, sM-1, sD).getDay();
+  var daysIn=lunarMonthLength(lm, ly);
+  var byDay={};
+  events.forEach(function(e){
+    var k=e.date.getFullYear()+'-'+e.date.getMonth()+'-'+e.date.getDate();
+    (byDay[k]=byDay[k]||[]).push(e);
+  });
+  var DOW=['CN','T2','T3','T4','T5','T6','T7'];
+  var html=DOW.map(function(d){ return '<div class="cal-dow">'+d+'</div>'; }).join('');
+  var t=today();
+  for (var i=firstDow-1;i>=0;i--) html+='<button class="cal-day other" disabled></button>';
+  for (var d=1;d<=daysIn;d++){
+    var s=lunarToSolar(d, lm, ly, false, TZ);
+    var k=s[2]+'-'+(s[1]-1)+'-'+s[0];
+    var cls='cal-day';
+    if (s[2]===t.getFullYear()&&(s[1]-1)===t.getMonth()&&s[0]===t.getDate()) cls+=' today';
+    if (byDay[k]) cls+=' has-event';
+    if (state.calSelected===k) cls+=' selected';
+    html+='<button class="'+cls+'" data-k="'+k+'" data-lunar="'+d+'">'+d+'<span class="cal-solar">'+s[0]+'/'+s[1]+'</span>'+(byDay[k]?'<span class="dot"></span>':'')+'</button>';
+  }
+  var grid=$('calGrid');
+  grid.innerHTML=html;
+  grid.querySelectorAll('.cal-day[data-k]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k=b.dataset.k;
+      state.calSelected=k;
+      if (!byDay[k]){
+        var parts=k.split('-');
+        var iso=parts[0]+'-'+('0'+(parseInt(parts[1])+1)).slice(-2)+'-'+('0'+parts[2]).slice(-2);
+        openAdd(iso);
+      } else {
+        render();
       }
     });
   });
@@ -599,11 +703,19 @@ $('btnCal').addEventListener('click', function(){
   render();
 });
 $('calPrev').addEventListener('click', function(){
-  state.calMonth--; if (state.calMonth<0){ state.calMonth=11; state.calYear--; }
+  if (state.lunarCal){
+    state.lunarMonth--; if (state.lunarMonth<1){ state.lunarMonth=12; state.lunarYear--; }
+  } else {
+    state.calMonth--; if (state.calMonth<0){ state.calMonth=11; state.calYear--; }
+  }
   state.calSelected=null; render();
 });
 $('calNext').addEventListener('click', function(){
-  state.calMonth++; if (state.calMonth>11){ state.calMonth=0; state.calYear++; }
+  if (state.lunarCal){
+    state.lunarMonth++; if (state.lunarMonth>12){ state.lunarMonth=1; state.lunarYear++; }
+  } else {
+    state.calMonth++; if (state.calMonth>11){ state.calMonth=0; state.calYear++; }
+  }
   state.calSelected=null; render();
 });
 /* ---------- Sao lưu / Khôi phục ---------- */
