@@ -297,6 +297,64 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,
   function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
 /* ---------- Tính sự kiện ---------- */
+/* Tính sự kiện cho một tháng dương cụ thể (dùng cho lịch) */
+function computeEventsForSolarMonth(y, m){
+  var out=[];
+  HOLIDAYS.forEach(function(h){
+    var c=state.customs[h.id]||{};
+    if (c.hidden) return;
+    var title=c.title||h.title;
+    if (h.type==='solar'){
+      if (h.month-1!==m) return;
+      var occ=new Date(y, m, h.day); occ.setHours(0,0,0,0);
+      out.push({key:'h-'+h.id+'-'+y, kind:'holiday', holidayId:h.id, title:title,
+        date:occ, days:daysUntil(occ), pinned:!!c.pinned, remind_me:!!c.remind_me,
+        lunar:null, detail:'Ngày lễ'});
+    }
+  });
+  // Ngày lễ âm: duyệt từng ngày trong tháng
+  var daysIn=new Date(y, m+1, 0).getDate();
+  for (var d=1; d<=daysIn; d++){
+    var l;
+    try { l=solarToLunar(d, m+1, y); } catch(e){ continue; }
+    HOLIDAYS.forEach(function(h){
+      if (h.type!=='lunar') return;
+      var c=state.customs[h.id]||{};
+      if (c.hidden) return;
+      var match=false, lunarLabel=null;
+      if (h.lastDay){
+        var len=lunarMonthLength(12, l.year);
+        if (l.month===12 && l.day===len) match=true;
+      } else if (h.day===l.day && h.month===l.month) match=true;
+      if (match){
+        var occ=new Date(y, m, d); occ.setHours(0,0,0,0);
+        lunarLabel=l.day+'/'+l.month+' âm lịch';
+        out.push({key:'h-'+h.id+'-'+y+'-'+m+'-'+d, kind:'holiday', holidayId:h.id,
+          title:c.title||h.title, date:occ, days:daysUntil(occ),
+          pinned:!!c.pinned, remind_me:!!c.remind_me,
+          lunar:lunarLabel, detail:'Ngày lễ · '+lunarLabel});
+      }
+    });
+  }
+  // Sự kiện cá nhân
+  state.personal.forEach(function(e){
+    var occ=null;
+    if (e.repeats_annually){
+      var p=e.date.split('-');
+      occ=new Date(y, +p[1]-1, +p[2]); occ.setHours(0,0,0,0);
+    } else {
+      var ed=parseYMD(e.date);
+      if (ed.getFullYear()===y && ed.getMonth()===m) occ=ed;
+    }
+    if (!occ || occ.getMonth()!==m) return;
+    var kindName={birthday:'Sinh nhật',anniversary:'Kỷ niệm',holiday:'Ngày lễ',other:'Ngày riêng'}[e.kind]||'Ngày riêng';
+    out.push({key:'p-'+e.id+'-'+y+'-'+m, kind:'personal', pid:e.id, title:e.title,
+      date:occ, days:daysUntil(occ), pinned:!!e.pinned, remind_me:!!e.remind_me,
+      detail:kindName+(e.repeats_annually?' · Hằng năm':'')+(e.note?' · '+e.note:''), raw:e});
+  });
+  return out;
+}
+
 function computeEvents(){
   var from=today(), out=[];
   HOLIDAYS.forEach(function(h){
@@ -462,6 +520,8 @@ function renderCal(events){
   var now=new Date();
   if (state.calYear==null){ state.calYear=now.getFullYear(); state.calMonth=now.getMonth(); }
   var y=state.calYear, m=state.calMonth;
+  // Tính sự kiện đúng cho tháng đang xem (kể cả năm tương lai)
+  events=computeEventsForSolarMonth(y, m);
   $('listView').classList.add('hidden');
   $('calView').classList.remove('hidden');
   $('calTitle').textContent=fmtMonthYear(y,m);
@@ -516,11 +576,20 @@ function renderLunarCal(events){
   var sY=solar[2], sM=solar[1], sD=solar[0];
   var firstDow=new Date(sY, sM-1, sD).getDay();
   var daysIn=lunarMonthLength(lm, ly);
+  // Tính sự kiện cho các tháng dương mà tháng âm này trải qua
   var byDay={};
-  events.forEach(function(e){
-    var k=e.date.getFullYear()+'-'+e.date.getMonth()+'-'+e.date.getDate();
-    (byDay[k]=byDay[k]||[]).push(e);
-  });
+  var seenMonths={};
+  for (var dd=1; dd<=daysIn; dd++){
+    var sd=lunarToSolar(dd, lm, ly, false, TZ);
+    var mk=sd[2]+'-'+(sd[1]-1);
+    if (!seenMonths[mk]){
+      seenMonths[mk]=true;
+      computeEventsForSolarMonth(sd[2], sd[1]-1).forEach(function(e){
+        var k=e.date.getFullYear()+'-'+e.date.getMonth()+'-'+e.date.getDate();
+        (byDay[k]=byDay[k]||[]).push(e);
+      });
+    }
+  }
   var DOW=['CN','T2','T3','T4','T5','T6','T7'];
   var html=DOW.map(function(d){ return '<div class="cal-dow">'+d+'</div>'; }).join('');
   var t=today();
