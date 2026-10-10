@@ -136,7 +136,7 @@ function syncAll(){ tasks.forEach(syncTask); }
 function render(){
   var box=$('taskList');
   if (!tasks.length){
-    box.innerHTML='<div class="empty"><div class="big">⏰</div><p>Chưa có tác vụ nào.<br>Bấm <b>+</b> để tạo lịch hẹn giờ đầu tiên.</p></div>';
+    box.innerHTML='<div class="empty"><div class="e">⏰</div><p>Chưa có tác vụ nào.<br>Bấm <b>+</b> để tạo lịch hẹn giờ đầu tiên.</p></div>';
     return;
   }
   var html='';
@@ -145,18 +145,18 @@ function render(){
     var res='';
     if (t.lastResult){
       var d=new Date(t.lastResult.at);
-      res='<div class="task-result"><span class="dot '+(t.lastResult.ok?'ok':'err')+'"></span>'+
-        '<span class="'+(t.lastResult.ok?'ok':'err')+'">'+esc(t.lastResult.info)+'</span>'+
+      res='<div class="trow-res"><span class="'+(t.lastResult.ok?'ok':'err')+'">'+
+        (t.lastResult.ok?'✓':'✕')+' '+esc(t.lastResult.info)+'</span>'+
         '<time>'+d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'</time></div>';
     }
-    html+='<div class="task'+(t.enabled?'':' off')+'"><div class="task-top">'+
-      '<div class="task-name">'+esc(t.name)+'</div>'+
-      '<label class="switch"><input type="checkbox" '+(t.enabled?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><span class="slider"></span></label></div>'+
-      '<div><span class="pill sched">'+esc(schedSummary(t))+'</span>'+
-      (n?'<span class="pill next">▶ '+esc(fmtNext(n))+'</span>':'<span class="pill">tạm dừng</span>')+'</div>'+
-      '<div class="task-desc">'+esc(actionSummary(t))+'</div>'+res+
-      '<div class="task-actions"><button class="btn" onclick="openSheet(\''+t.id+'\')">Sửa</button>'+
-      '<button class="btn primary" onclick="runOnce(\''+t.id+'\')">Chạy ngay</button></div></div>';
+    html+='<div class="trow'+(t.enabled?'':' off')+'">'+
+      '<div class="trow-top"><div class="trow-name">'+esc(t.name)+'</div>'+
+      '<span class="sw"><input type="checkbox" '+(t.enabled?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><span class="sl"></span></span></div>'+
+      '<div class="trow-sub">'+esc(schedSummary(t))+
+      (n?' &nbsp;·&nbsp; Chạy tiếp <b>'+esc(fmtNext(n))+'</b>':' &nbsp;·&nbsp; đang tắt')+'</div>'+
+      '<div class="trow-url">'+esc(actionSummary(t))+'</div>'+res+
+      '<div class="trow-btns"><button class="tbtn" onclick="openSheet(\''+t.id+'\')">Sửa</button>'+
+      '<button class="tbtn go" onclick="runOnce(\''+t.id+'\')">Chạy ngay</button></div></div>';
   });
   box.innerHTML=html;
 }
@@ -168,17 +168,17 @@ function segWire(id, cb){
   var el=$(id);
   el.addEventListener('click',function(e){
     var b=e.target.closest('button'); if(!b) return;
-    Array.prototype.forEach.call(el.querySelectorAll('button'),function(x){x.classList.remove('active');});
-    b.classList.add('active'); cb(b.getAttribute('data-v'));
+    Array.prototype.forEach.call(el.querySelectorAll('button'),function(x){x.classList.remove('on');});
+    b.classList.add('on'); cb(b.getAttribute('data-v'));
   });
 }
 function segVal(id){
-  var b=$(id).querySelector('button.active');
+  var b=$(id).querySelector('button.on');
   return b?b.getAttribute('data-v'):null;
 }
 function segSet(id,v){
   Array.prototype.forEach.call($(id).querySelectorAll('button'),function(x){
-    x.classList.toggle('active', x.getAttribute('data-v')===v);
+    x.classList.toggle('on', x.getAttribute('data-v')===v);
   });
 }
 function initForm(){
@@ -186,7 +186,7 @@ function initForm(){
     return '<button data-d="'+i+'">'+n+'</button>';
   }).join('');
   $('fDays').addEventListener('click',function(e){
-    var b=e.target.closest('button'); if(b) b.classList.toggle('active');
+    var b=e.target.closest('button'); if(b) b.classList.toggle('on');
   });
   segWire('segAction',function(v){
     $('boxHttp').classList.toggle('hidden',v!=='http');
@@ -231,7 +231,7 @@ function openSheet(id){
   $('fDaily').value=(t&&t.schedule.time)||'08:00';
   $('fWeekly').value=(t&&t.schedule.time)||'08:00';
   Array.prototype.forEach.call($('fDays').querySelectorAll('button'),function(b){
-    b.classList.toggle('active',!!(t&&t.schedule.days&&t.schedule.days.indexOf(+b.getAttribute('data-d'))>=0));
+    b.classList.toggle('on',!!(t&&t.schedule.days&&t.schedule.days.indexOf(+b.getAttribute('data-d'))>=0));
   });
   $('fMinutes').value=(t&&t.schedule.minutes)||30;
   $('fEnabled').checked=!t||t.enabled!==false;
@@ -266,7 +266,7 @@ function collectTask(){
     schedule.time=('0'+schedule.hour).slice(-2)+':'+('0'+schedule.minute).slice(-2);
     if(st==='weekly'){
       schedule.days=[];
-      Array.prototype.forEach.call($('fDays').querySelectorAll('button.active'),function(b){
+      Array.prototype.forEach.call($('fDays').querySelectorAll('button.on'),function(b){
         schedule.days.push(+b.getAttribute('data-d'));
       });
       if(!schedule.days.length){ alert('Chọn ít nhất 1 ngày trong tuần'); return null; }
