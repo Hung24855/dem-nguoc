@@ -1,0 +1,1 @@
+{"tasks":[{"action":{"body":"","headers":{},"method":"GET","type":"http","url":"https://httpbin.org/get"},"cron":"0 * * * *","enabled":false,"id":"vi-du-ping","name":"Ví dụ: ping API mỗi giờ (đang tắt)","notify_webhook":"","timezone":"Asia/Ho_Chi_Minh"}]}
