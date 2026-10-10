@@ -246,6 +246,7 @@ window.addEventListener('online', updateOnline);
 window.addEventListener('offline', updateOnline);
 
 auth.signInAnonymously().catch(function(err){ setSync('Lỗi đăng nhập: '+err.message, false); });
+initNotif();
 auth.onAuthStateChanged(function(user){
   if (!user) return;
   startSync();
@@ -407,6 +408,58 @@ function render(){
   if (state.view==='list') renderList(events);
   else if (state.lunarCal) renderLunarCal(events);
   else renderCal(events);
+  checkReminders(events);
+}
+
+/* ---------- Thông báo trình duyệt (nhắc trước 3 ngày) ---------- */
+function notifSupported(){ return ('Notification' in window); }
+function notifKey(e){
+  var d=today();
+  return 'notif_'+e.key+'_'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+function updateNotifBtn(){
+  var b=$('btnNotif'); if (!b) return;
+  if (!notifSupported()){ b.style.opacity='0.35'; b.title='Trình duyệt không hỗ trợ thông báo'; return; }
+  var on = Notification.permission==='granted';
+  b.classList.toggle('active', on);
+  b.title = on ? 'Đã bật thông báo nhắc sự kiện' : 'Bật thông báo nhắc sự kiện';
+}
+function initNotif(){
+  var b=$('btnNotif'); if (!b) return;
+  updateNotifBtn();
+  b.addEventListener('click', function(){
+    if (!notifSupported()){ alert('Trình duyệt này không hỗ trợ thông báo.'); return; }
+    if (Notification.permission==='granted'){ alert('Đã bật thông báo rồi.'); return; }
+    Notification.requestPermission().then(function(p){
+      updateNotifBtn();
+      if (p==='granted'){
+        try { new Notification('Đếm ngược', {body:'Đã bật nhắc sự kiện. Khi có sự kiện bật "Nhắc tôi" còn đúng 3 ngày, bạn sẽ thấy thông báo ở đây.'}); } catch(e){}
+        if (state.ready) checkReminders(computeEvents());
+      } else {
+        alert('Bạn đã từ chối quyền thông báo. Muốn bật lại thì vào cài đặt trình duyệt cho trang này.');
+      }
+    });
+  });
+  // Kiểm tra định kỳ khi trang đang mở
+  setInterval(function(){ if (state.ready && Notification.permission==='granted') checkReminders(computeEvents()); }, 30*60*1000);
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden && state.ready && Notification.permission==='granted') checkReminders(computeEvents());
+  });
+}
+function checkReminders(events){
+  if (!notifSupported() || Notification.permission!=='granted') return;
+  events.forEach(function(e){
+    if (!e.remind_me || e.days!==3) return;
+    var k=notifKey(e);
+    try { if (localStorage.getItem(k)) return; } catch(err){}
+    try {
+      new Notification('Nhắc bạn nè', {
+        body:'Còn 3 ngày nữa là đến '+e.title+' ('+fmtDate(e.date)+') đó!',
+        tag:k
+      });
+      try { localStorage.setItem(k, '1'); } catch(err2){}
+    } catch(err3){}
+  });
 }
 function setCalMode(lunar){
   state.lunarCal=lunar;
