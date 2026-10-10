@@ -136,7 +136,7 @@ function syncAll(){ tasks.forEach(syncTask); }
 function render(){
   var box=$('taskList');
   if (!tasks.length){
-    box.innerHTML='<div class="empty">Chưa có tác vụ nào.<br>Bấm + để tạo lịch hẹn giờ đầu tiên.</div>';
+    box.innerHTML='<div class="empty"><div class="big">⏰</div><p>Chưa có tác vụ nào.<br>Bấm <b>+</b> để tạo lịch hẹn giờ đầu tiên.</p></div>';
     return;
   }
   var html='';
@@ -145,17 +145,18 @@ function render(){
     var res='';
     if (t.lastResult){
       var d=new Date(t.lastResult.at);
-      res='<div class="task-result '+(t.lastResult.ok?'ok':'err')+'">'+
-        (t.lastResult.ok?'✓':'✗')+' '+esc(t.lastResult.info)+
-        ' <span style="opacity:.6">· '+d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'</span></div>';
+      res='<div class="task-result"><span class="dot '+(t.lastResult.ok?'ok':'err')+'"></span>'+
+        '<span class="'+(t.lastResult.ok?'ok':'err')+'">'+esc(t.lastResult.info)+'</span>'+
+        '<time>'+d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'</time></div>';
     }
-    html+='<div class="task"><div class="task-head">'+
+    html+='<div class="task'+(t.enabled?'':' off')+'"><div class="task-top">'+
       '<div class="task-name">'+esc(t.name)+'</div>'+
       '<label class="switch"><input type="checkbox" '+(t.enabled?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><span class="slider"></span></label></div>'+
-      '<div class="task-meta">⚙️ '+esc(actionSummary(t))+'<br>🕐 '+esc(schedSummary(t))+
-      (n?'<br>▶ Chạy tiếp: <b>'+esc(fmtNext(n))+'</b>':'')+'</div>'+res+
-      '<div class="task-actions"><button class="chip-btn" onclick="openSheet(\''+t.id+'\')">Sửa</button>'+
-      '<button class="chip-btn" onclick="runOnce(\''+t.id+'\')">Chạy ngay</button></div></div>';
+      '<div><span class="pill sched">'+esc(schedSummary(t))+'</span>'+
+      (n?'<span class="pill next">▶ '+esc(fmtNext(n))+'</span>':'<span class="pill">tạm dừng</span>')+'</div>'+
+      '<div class="task-desc">'+esc(actionSummary(t))+'</div>'+res+
+      '<div class="task-actions"><button class="btn" onclick="openSheet(\''+t.id+'\')">Sửa</button>'+
+      '<button class="btn primary" onclick="runOnce(\''+t.id+'\')">Chạy ngay</button></div></div>';
   });
   box.innerHTML=html;
 }
