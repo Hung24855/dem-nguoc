@@ -7,143 +7,240 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#f5f1e8; --card:#fffdf7; --ink:#2d2119; --line:#e5d9c3;
-  --accent:#0f766e; --accent-soft:#e0f2f0; --muted:#8a7a63;
-  --ok:#1e7e34; --err:#c0392b;
+  --bg:#f5f1e8; --card:#fffdf7; --ink:#2d2119; --muted:#97876f;
+  --line:#e3d5bd; --accent:#99651f; --accent-soft:#f3e9d4;
+  --ok:#1e7e34; --err:#b3392b; --radius:16px;
 }
-body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",sans-serif;min-height:100vh;font-size:15px}
-.hero{padding:32px 22px 18px;display:flex;align-items:center;gap:14px}
-.hero-icon{width:52px;height:52px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 12px rgba(15,118,110,.3);flex-shrink:0}
-.hero h1{font-size:24px;font-weight:700;letter-spacing:-.3px}
-.hero p{font-size:12.5px;color:var(--muted);margin-top:3px}
-#taskList{padding:4px 16px 110px;max-width:640px;margin:0 auto}
-.task{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(45,33,25,.05);position:relative;overflow:hidden}
-.task::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);opacity:.9}
-.task.off::before{background:#c9bda8;opacity:.5}
-.task.off{opacity:.75}
-.task-top{display:flex;align-items:flex-start;gap:10px}
-.task-name{font-size:16.5px;font-weight:700;flex:1;line-height:1.35}
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:20px;margin-top:8px;margin-right:6px}
-.pill.sched{background:var(--accent-soft);color:var(--accent)}
-.pill.next{background:#fef3e2;color:#b45309}
-.task-desc{font-size:13px;color:var(--muted);margin-top:8px;font-family:ui-monospace,monospace;word-break:break-all;line-height:1.5}
-.task-result{font-size:12.5px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;align-items:center;gap:6px}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dot.ok{background:var(--ok)} .dot.err{background:var(--err)}
-.task-result .ok{color:var(--ok)} .task-result .err{color:var(--err)}
-.task-result time{margin-left:auto;color:var(--muted);font-size:11.5px}
-.task-actions{display:flex;gap:8px;margin-top:12px}
-.btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px;font-size:13.5px;font-weight:600;color:var(--ink)}
-.btn:active{transform:scale(.97)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.switch{position:relative;width:48px;height:28px;flex-shrink:0;margin-top:2px}
-.switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;inset:0;background:#ddd0b8;border-radius:28px;transition:.2s;cursor:pointer}
-.slider:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.switch input:checked+.slider{background:var(--accent)}
-.switch input:checked+.slider:before{transform:translateX(20px)}
-.empty{text-align:center;padding:70px 30px;color:var(--muted)}
-.empty .big{font-size:44px;margin-bottom:14px}
-.empty p{font-size:14px;line-height:1.8}
-.fab{position:fixed;right:20px;bottom:26px;width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;font-size:32px;font-weight:300;border:none;box-shadow:0 6px 18px rgba(15,118,110,.4);z-index:50;line-height:1}
-.fab:active{transform:scale(.94)}
-.sheet-backdrop{position:fixed;inset:0;background:rgba(45,33,25,.45);z-index:100;display:flex;align-items:flex-end;backdrop-filter:blur(2px)}
-.sheet{background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:640px;margin:0 auto;max-height:92vh;overflow-y:auto;padding:22px 22px 36px;animation:up .25s ease;position:relative}
-@keyframes up{from{transform:translateY(50px);opacity:.4}to{transform:none;opacity:1}}
-.grab{width:40px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 16px}
-.sheet h2{font-size:19px;margin-bottom:18px;letter-spacing:-.2px}
-.sec{background:var(--bg);border-radius:14px;padding:14px;margin-bottom:14px}
-.sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px}
-.f-row{margin-bottom:12px}
-.f-row:last-child{margin-bottom:0}
-.f-row label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink);opacity:.85}
-.f-row input[type=text],.f-row input[type=url],.f-row input[type=number],.f-row input[type=time],.f-row input[type=datetime-local],.f-row textarea,.f-row select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:15px;background:#fff;color:var(--ink);font-family:inherit}
-.f-row input:focus,.f-row textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(15,118,110,.12)}
-.f-row textarea{font-family:ui-monospace,monospace;font-size:13px;resize:vertical}
-.seg{display:flex;gap:8px}
-.seg button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:13px;font-weight:600;color:var(--muted)}
-.seg button.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.days{display:flex;gap:8px;justify-content:space-between}
-.days button{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:700;color:var(--muted)}
-.days button.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.row-between{display:flex;align-items:center;justify-content:space-between}
-.big-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;margin-top:6px;box-shadow:0 4px 12px rgba(15,118,110,.3)}
-.big-btn:active{transform:scale(.98)}
-.ghost-btn{width:100%;border:1.5px solid var(--accent);color:var(--accent);background:none;border-radius:14px;padding:12px;font-size:14px;font-weight:600;margin-top:10px}
-.danger-link{display:block;width:100%;background:none;border:none;color:var(--err);font-size:14px;padding:14px;margin-top:6px}
-.sheet-close{position:absolute;right:14px;top:12px;border:none;background:var(--bg);width:32px;height:32px;border-radius:50%;font-size:15px;color:var(--muted)}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Roboto,"Segoe UI",sans-serif;
+  min-height:100vh;font-size:16px;line-height:1.45}
+button{font-family:inherit}
+
+/* ---------- Header ---------- */
+.hero{padding:34px 22px 10px;max-width:680px;margin:0 auto}
+.hero h1{font-size:27px;font-weight:700;letter-spacing:-.4px}
+.hero p{font-size:13px;color:var(--muted);margin-top:5px}
+
+/* ---------- Danh sách: hàng gạch chân kiểu Đếm ngược ---------- */
+#taskList{max-width:680px;margin:0 auto;padding:8px 22px 120px}
+.trow{padding:16px 2px;border-bottom:1px solid var(--line)}
+.trow:last-child{border-bottom:none}
+.trow-top{display:flex;align-items:center;gap:12px}
+.trow-name{font-size:17px;font-weight:600;flex:1;letter-spacing:-.2px}
+.trow.off .trow-name{color:var(--muted)}
+.trow-sub{font-size:13.5px;color:var(--muted);margin-top:6px}
+.trow-sub b{color:var(--accent);font-weight:600}
+.trow-url{font-size:12.5px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+.trow-res{display:flex;align-items:center;gap:7px;font-size:13px;margin-top:8px}
+.trow-res .ok{color:var(--ok)} .trow-res .err{color:var(--err)}
+.trow-res time{margin-left:auto;color:var(--muted);font-size:12px}
+.trow-btns{display:flex;gap:10px;margin-top:12px}
+.tbtn{border:1px solid var(--line);background:var(--card);border-radius:11px;
+  padding:9px 0;flex:1;font-size:14px;font-weight:600;color:var(--ink)}
+.tbtn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.tbtn:active{transform:scale(.98)}
+.empty{padding:80px 20px;text-align:center;color:var(--muted)}
+.empty .e{font-size:46px;margin-bottom:12px}
+.empty p{font-size:14.5px;line-height:1.75}
+
+/* toggle */
+.sw{position:relative;width:50px;height:30px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:#d8c9ae;border-radius:30px;transition:.18s}
+.sl::before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.sw input:checked+.sl{background:var(--accent)}
+.sw input:checked+.sl::before{transform:translateX(20px)}
+
+/* FAB */
+.fab{position:fixed;right:22px;bottom:28px;width:58px;height:58px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:30px;font-weight:300;border:none;
+  box-shadow:0 6px 18px rgba(153,101,31,.4);z-index:50;line-height:1}
+.fab:active{transform:scale(.93)}
+
+/* ---------- Bottom sheet ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(45,33,25,.42);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:94vh;max-height:94dvh;
+  border-radius:22px 22px 0 0;overflow-y:auto;overscroll-behavior:contain;
+  padding:10px 20px calc(28px + env(safe-area-inset-bottom));animation:up .22s ease}
+@keyframes up{from{transform:translateY(60px)}to{transform:none}}
+.grab{width:38px;height:4px;border-radius:4px;background:#d8c9ae;margin:6px auto 4px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 2px 14px;position:sticky;top:0;background:var(--bg);z-index:2}
+.sheet-head h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.xbtn{width:32px;height:32px;border-radius:50%;border:none;background:#e9dfc9;
+  color:var(--ink);font-size:15px}
+
+/* section */
+.sec{margin-bottom:20px}
+.sec-h{font-size:13px;font-weight:600;color:var(--muted);margin:0 4px 8px}
+.group{background:var(--card);border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 1px 3px rgba(45,33,25,.06)}
+.row{padding:13px 16px}
+.row+.row{border-top:1px solid var(--line)}
+.row label.lbl{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+.row label.lbl small{font-weight:400;color:var(--muted)}
+.tin{width:100%;border:none;background:transparent;font-size:16px;color:var(--ink);
+  font-family:inherit;padding:2px 0}
+.tin:focus{outline:none}
+.tin::placeholder{color:#c3b495}
+textarea.tin{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;
+  resize:vertical;line-height:1.6}
+select.tin{appearance:none}
+
+/* segmented kiểu iOS */
+.segwrap{padding:12px 16px}
+.seg{display:flex;background:#ece2cc;border-radius:12px;padding:3px;gap:2px}
+.seg button{flex:1;border:none;background:transparent;border-radius:9px;
+  padding:9px 2px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(45,33,25,.18)}
+.seg button:active{transform:scale(.97)}
+
+/* chọn ngày tuần */
+.wdays{display:flex;gap:8px;padding:4px 16px 14px}
+.wdays button{flex:1;aspect-ratio:1;max-width:46px;border-radius:50%;border:1px solid var(--line);
+  background:transparent;font-size:13px;font-weight:700;color:var(--muted)}
+.wdays button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* hàng toggle */
+.trowline{display:flex;align-items:center;justify-content:space-between;padding:13px 16px}
+.trowline .lbl{font-size:15px;font-weight:600}
+
+/* nút */
+.cta{width:100%;background:var(--accent);color:#fff;border:none;border-radius:14px;
+  padding:15px;font-size:16.5px;font-weight:700;margin-top:4px;
+  box-shadow:0 4px 14px rgba(153,101,31,.32)}
+.cta:active{transform:scale(.98)}
+.ghost{width:100%;background:transparent;border:1.5px solid var(--accent);color:var(--accent);
+  border-radius:14px;padding:12px;font-size:15px;font-weight:600;margin-top:10px}
+.del{width:100%;background:none;border:none;color:var(--err);font-size:15px;
+  padding:16px;margin-top:2px}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.7;margin:16px 4px 0}
 .hidden{display:none!important}
-.note{font-size:12px;color:var(--muted);line-height:1.7;background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:14px}
+@media(min-width:600px){
+  .backdrop{align-items:center;padding:24px}
+  .sheet{border-radius:22px;max-height:88vh}
+}
 </style>
 </head>
 <body>
 <div class="hero">
-  <div class="hero-icon">⏰</div>
-  <div><h1>Hẹn giờ</h1><p id="subtitle">Chạy tác vụ theo lịch tự động</p></div>
+  <h1>Hẹn giờ</h1>
+  <p id="subtitle">Tác vụ tự chạy theo lịch bạn đặt</p>
 </div>
 <div id="taskList"></div>
-<button class="fab" onclick="openSheet()">+</button>
+<button class="fab" onclick="openSheet()" aria-label="Thêm">+</button>
 
-<div id="sheet" class="sheet-backdrop hidden" onclick="if(event.target===this)closeSheet()">
-  <div class="sheet">
+<div id="sheet" class="backdrop hidden" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" role="dialog" aria-modal="true">
     <div class="grab"></div>
-    <button class="sheet-close" onclick="closeSheet()">✕</button>
-    <h2 id="sheetTitle">Tác vụ mới</h2>
-
-    <div class="sec">
-      <div class="sec-title">Chung</div>
-      <div class="f-row"><label>Tên tác vụ</label><input type="text" id="fName" placeholder="VD: Gọi API báo cáo sáng"></div>
-      <div class="f-row row-between"><label style="margin:0">Bật tác vụ</label>
-        <span class="switch"><input type="checkbox" id="fEnabled" checked><span class="slider"></span></span></div>
+    <div class="sheet-head">
+      <h2 id="sheetTitle">Tác vụ mới</h2>
+      <button class="xbtn" onclick="closeSheet()">✕</button>
     </div>
 
     <div class="sec">
-      <div class="sec-title">Tác vụ làm gì</div>
-      <div class="f-row"><div class="seg" id="segAction">
-        <button data-v="http" class="active">🌐 Gọi API</button>
-        <button data-v="open_url">🔗 Mở link</button>
-        <button data-v="notify">🔔 Thông báo</button>
-      </div></div>
-      <div id="boxHttp">
-        <div class="f-row"><div class="seg" id="segMethod">
-          <button data-v="GET" class="active">GET</button>
-          <button data-v="POST">POST</button>
-          <button data-v="PUT">PUT</button>
-          <button data-v="DELETE">DEL</button>
+      <div class="group">
+        <div class="row">
+          <label class="lbl" for="fName">Tên tác vụ</label>
+          <input class="tin" type="text" id="fName" placeholder="VD: Gọi API báo cáo sáng" maxlength="80">
+        </div>
+        <div class="trowline">
+          <span class="lbl">Bật tác vụ</span>
+          <span class="sw"><input type="checkbox" id="fEnabled" checked><span class="sl"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">Tác vụ sẽ làm gì</div>
+      <div class="group">
+        <div class="segwrap"><div class="seg" id="segAction">
+          <button data-v="http" class="on">Gọi API</button>
+          <button data-v="open_url">Mở link</button>
+          <button data-v="notify">Thông báo</button>
         </div></div>
-        <div class="f-row"><label>URL</label><input type="url" id="fUrl" placeholder="https://example.com/api" autocapitalize="off" spellcheck="false"></div>
-        <div class="f-row"><label>Headers <span style="font-weight:400;color:var(--muted)">(JSON)</span></label><textarea id="fHeaders" rows="2" placeholder='{"Authorization": "Bearer xxx"}' spellcheck="false"></textarea></div>
-        <div class="f-row"><label>Body</label><textarea id="fBody" rows="3" placeholder='{"key": "value"}' spellcheck="false"></textarea></div>
       </div>
-      <div id="boxUrl" class="hidden">
-        <div class="f-row"><label>Link cần mở</label><input type="url" id="fOpenUrl" placeholder="https://example.com" autocapitalize="off" spellcheck="false"></div>
+      <div class="group" id="boxHttp" style="margin-top:10px">
+        <div class="row">
+          <label class="lbl">Method</label>
+          <div class="seg" id="segMethod" style="margin:0">
+            <button data-v="GET" class="on">GET</button>
+            <button data-v="POST">POST</button>
+            <button data-v="PUT">PUT</button>
+            <button data-v="DELETE">DEL</button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="lbl" for="fUrl">URL</label>
+          <input class="tin" type="url" id="fUrl" placeholder="https://example.com/api"
+            autocapitalize="off" autocomplete="off" spellcheck="false"
+            style="font-family:ui-monospace,Menlo,monospace;font-size:14px">
+        </div>
+        <div class="row">
+          <label class="lbl" for="fHeaders">Headers <small>— JSON, không bắt buộc</small></label>
+          <textarea class="tin" id="fHeaders" rows="2" placeholder='{"Authorization": "Bearer xxx"}' spellcheck="false"></textarea>
+        </div>
+        <div class="row">
+          <label class="lbl" for="fBody">Body</label>
+          <textarea class="tin" id="fBody" rows="3" placeholder='{"key": "value"}' spellcheck="false"></textarea>
+        </div>
       </div>
-      <div id="boxNotify" class="hidden">
-        <div class="f-row"><label>Nội dung thông báo</label><input type="text" id="fMsg" placeholder="Đến giờ rồi!"></div>
+      <div class="group hidden" id="boxUrl" style="margin-top:10px">
+        <div class="row">
+          <label class="lbl" for="fOpenUrl">Link cần mở</label>
+          <input class="tin" type="url" id="fOpenUrl" placeholder="https://example.com"
+            autocapitalize="off" autocomplete="off" spellcheck="false"
+            style="font-family:ui-monospace,Menlo,monospace;font-size:14px">
+        </div>
+      </div>
+      <div class="group hidden" id="boxNotify" style="margin-top:10px">
+        <div class="row">
+          <label class="lbl" for="fMsg">Nội dung thông báo</label>
+          <input class="tin" type="text" id="fMsg" placeholder="Đến giờ rồi!" maxlength="120">
+        </div>
       </div>
     </div>
 
     <div class="sec">
-      <div class="sec-title">Lịch chạy</div>
-      <div class="f-row"><div class="seg" id="segSched">
-        <button data-v="once" class="active">1 lần</button>
-        <button data-v="daily">Hằng ngày</button>
-        <button data-v="weekly">Hằng tuần</button>
-        <button data-v="interval">Định kỳ</button>
-      </div></div>
-      <div id="boxOnce"><div class="f-row"><label>Ngày giờ chạy</label><input type="datetime-local" id="fOnce"></div></div>
-      <div id="boxDaily" class="hidden"><div class="f-row"><label>Giờ chạy mỗi ngày</label><input type="time" id="fDaily" value="08:00"></div></div>
-      <div id="boxWeekly" class="hidden">
-        <div class="f-row"><label>Ngày trong tuần</label><div class="days" id="fDays"></div></div>
-        <div class="f-row"><label>Giờ chạy</label><input type="time" id="fWeekly" value="08:00"></div>
+      <div class="sec-h">Lịch chạy</div>
+      <div class="group">
+        <div class="segwrap"><div class="seg" id="segSched">
+          <button data-v="once" class="on">Một lần</button>
+          <button data-v="daily">Hằng ngày</button>
+          <button data-v="weekly">Hằng tuần</button>
+          <button data-v="interval">Định kỳ</button>
+        </div></div>
       </div>
-      <div id="boxInterval" class="hidden"><div class="f-row"><label>Mỗi bao nhiêu phút <span style="font-weight:400;color:var(--muted)">(tối thiểu 15)</span></label><input type="number" id="fMinutes" value="30" min="15"></div></div>
+      <div class="group" style="margin-top:10px">
+        <div class="row" id="boxOnce">
+          <label class="lbl" for="fOnce">Ngày giờ chạy</label>
+          <input class="tin" type="datetime-local" id="fOnce">
+        </div>
+        <div class="row hidden" id="boxDaily">
+          <label class="lbl" for="fDaily">Giờ chạy mỗi ngày</label>
+          <input class="tin" type="time" id="fDaily" value="08:00">
+        </div>
+        <div class="row hidden" id="boxWeekly">
+          <label class="lbl">Ngày trong tuần</label>
+          <div class="wdays" id="fDays" style="padding:2px 0 10px"></div>
+          <label class="lbl" for="fWeekly">Giờ chạy</label>
+          <input class="tin" type="time" id="fWeekly" value="08:00">
+        </div>
+        <div class="row hidden" id="boxInterval">
+          <label class="lbl" for="fMinutes">Lặp lại mỗi <small>(phút, tối thiểu 15)</small></label>
+          <input class="tin" type="number" id="fMinutes" value="30" min="15" inputmode="numeric">
+        </div>
+      </div>
     </div>
 
-    <button class="ghost-btn" onclick="testNow()">▶ Chạy thử ngay</button>
-    <button class="big-btn" onclick="saveTask()">Lưu tác vụ</button>
-    <button class="danger-link hidden" id="btnDelete" onclick="deleteTask()">Xóa tác vụ này</button>
-    <div class="note" id="bgNote">💡 Bản web: tác vụ chạy khi đang mở trang. Muốn chạy ngầm 24/7 thì dùng bản chạy trên máy chủ (GitHub Actions).</div>
+    <button class="cta" onclick="saveTask()">Lưu tác vụ</button>
+    <button class="ghost" onclick="testNow()">▶&nbsp; Chạy thử ngay</button>
+    <button class="del hidden" id="btnDelete" onclick="deleteTask()">Xóa tác vụ này</button>
+    <p class="hint" id="bgNote">Bản web chạy tác vụ khi đang mở trang. Muốn chạy ngầm 24/7 thì dùng bản chạy trên máy chủ (GitHub Actions).</p>
   </div>
 </div>
 <script src="app.js"></script>
