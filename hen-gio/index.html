@@ -7,122 +7,115 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#f5f1e8; --card:#fffdf7; --ink:#2d2119; --muted:#97876f;
-  --line:#e3d5bd; --accent:#99651f; --accent-soft:#f3e9d4;
-  --ok:#1e7e34; --err:#b3392b; --radius:16px;
+  --bg:#f7f7f5; --card:#ffffff; --ink:#161616; --muted:#737373;
+  --line:#e9e9e6; --track:#efefeb; --black:#161616;
+  --ok:#16a34a; --err:#dc2626; --r:18px;
 }
 html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Roboto,"Segoe UI",sans-serif;
-  min-height:100vh;font-size:16px;line-height:1.45}
-button{font-family:inherit}
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",Roboto,"Segoe UI",sans-serif;
+  min-height:100vh;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
 
 /* ---------- Header ---------- */
-.hero{padding:34px 22px 10px;max-width:680px;margin:0 auto}
-.hero h1{font-size:27px;font-weight:700;letter-spacing:-.4px}
-.hero p{font-size:13px;color:var(--muted);margin-top:5px}
+.hero{padding:44px 24px 14px;max-width:680px;margin:0 auto}
+.hero h1{font-size:32px;font-weight:700;letter-spacing:-.8px}
+.hero p{font-size:14px;color:var(--muted);margin-top:6px;letter-spacing:-.1px}
 
-/* ---------- Danh sách: hàng gạch chân kiểu Đếm ngược ---------- */
-#taskList{max-width:680px;margin:0 auto;padding:8px 22px 120px}
-.trow{padding:16px 2px;border-bottom:1px solid var(--line)}
+/* ---------- List ---------- */
+#taskList{max-width:680px;margin:0 auto;padding:6px 24px 130px}
+.trow{padding:20px 0;border-bottom:1px solid var(--line)}
 .trow:last-child{border-bottom:none}
-.trow-top{display:flex;align-items:center;gap:12px}
+.trow-top{display:flex;align-items:center;gap:14px}
 .trow-name{font-size:17px;font-weight:600;flex:1;letter-spacing:-.2px}
-.trow.off .trow-name{color:var(--muted)}
-.trow-sub{font-size:13.5px;color:var(--muted);margin-top:6px}
-.trow-sub b{color:var(--accent);font-weight:600}
-.trow-url{font-size:12.5px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
-.trow-res{display:flex;align-items:center;gap:7px;font-size:13px;margin-top:8px}
-.trow-res .ok{color:var(--ok)} .trow-res .err{color:var(--err)}
-.trow-res time{margin-left:auto;color:var(--muted);font-size:12px}
-.trow-btns{display:flex;gap:10px;margin-top:12px}
-.tbtn{border:1px solid var(--line);background:var(--card);border-radius:11px;
-  padding:9px 0;flex:1;font-size:14px;font-weight:600;color:var(--ink)}
-.tbtn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.trow.off .trow-name{color:#a3a3a3}
+.trow-sub{font-size:13.5px;color:var(--muted);margin-top:7px;letter-spacing:-.1px}
+.trow-sub b{color:var(--ink);font-weight:600}
+.trow-url{font-size:12.5px;color:#a3a3a3;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow-res{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:10px}
+.trow-res .ok{color:var(--ok);font-weight:500} .trow-res .err{color:var(--err);font-weight:500}
+.trow-res time{margin-left:auto;color:#a3a3a3;font-size:12px}
+.trow-btns{display:flex;gap:10px;margin-top:14px}
+.tbtn{border:1px solid var(--line);background:var(--card);border-radius:13px;
+  padding:12px 0;flex:1;font-size:14.5px;font-weight:600;color:var(--ink)}
+.tbtn.go{background:var(--black);border-color:var(--black);color:#fff}
 .tbtn:active{transform:scale(.98)}
-.empty{padding:80px 20px;text-align:center;color:var(--muted)}
-.empty .e{font-size:46px;margin-bottom:12px}
-.empty p{font-size:14.5px;line-height:1.75}
+.empty{padding:90px 24px;text-align:center}
+.empty .e{font-size:52px;margin-bottom:16px}
+.empty p{font-size:15px;color:var(--muted);line-height:1.7}
 
 /* toggle */
-.sw{position:relative;width:50px;height:30px;flex-shrink:0}
+.sw{position:relative;width:51px;height:31px;flex-shrink:0}
 .sw input{opacity:0;width:0;height:0}
-.sl{position:absolute;inset:0;background:#d8c9ae;border-radius:30px;transition:.18s}
-.sl::before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;
-  background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
-.sw input:checked+.sl{background:var(--accent)}
+.sl{position:absolute;inset:0;background:#d4d4d0;border-radius:31px;transition:.2s}
+.sl::before{content:"";position:absolute;width:25px;height:25px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.22)}
+.sw input:checked+.sl{background:var(--black)}
 .sw input:checked+.sl::before{transform:translateX(20px)}
 
 /* FAB */
-.fab{position:fixed;right:22px;bottom:28px;width:58px;height:58px;border-radius:50%;
-  background:var(--accent);color:#fff;font-size:30px;font-weight:300;border:none;
-  box-shadow:0 6px 18px rgba(153,101,31,.4);z-index:50;line-height:1}
-.fab:active{transform:scale(.93)}
+.fab{position:fixed;right:24px;bottom:30px;width:60px;height:60px;border-radius:50%;
+  background:var(--black);color:#fff;font-size:30px;font-weight:300;border:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);z-index:50;line-height:1}
+.fab:active{transform:scale(.92)}
 
-/* ---------- Bottom sheet ---------- */
-.backdrop{position:fixed;inset:0;background:rgba(45,33,25,.42);z-index:100;
-  display:flex;align-items:flex-end;justify-content:center}
+/* ---------- Sheet ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
 .sheet{background:var(--bg);width:100%;max-width:560px;max-height:94vh;max-height:94dvh;
-  border-radius:22px 22px 0 0;overflow-y:auto;overscroll-behavior:contain;
-  padding:10px 20px calc(28px + env(safe-area-inset-bottom));animation:up .22s ease}
-@keyframes up{from{transform:translateY(60px)}to{transform:none}}
-.grab{width:38px;height:4px;border-radius:4px;background:#d8c9ae;margin:6px auto 4px}
+  border-radius:26px 26px 0 0;overflow-y:auto;overscroll-behavior:contain;
+  padding:8px 20px calc(30px + env(safe-area-inset-bottom));animation:up .24s cubic-bezier(.32,.72,.35,1)}
+@keyframes up{from{transform:translateY(70px)}to{transform:none}}
+.sheet::-webkit-scrollbar{width:0}
+.grab{width:38px;height:5px;border-radius:5px;background:#d4d4d0;margin:8px auto 2px}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 2px 14px;position:sticky;top:0;background:var(--bg);z-index:2}
-.sheet-head h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
-.xbtn{width:32px;height:32px;border-radius:50%;border:none;background:#e9dfc9;
-  color:var(--ink);font-size:15px}
+  padding:14px 4px 18px}
+.sheet-head h2{font-size:23px;font-weight:700;letter-spacing:-.5px}
+.xbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--track);
+  color:var(--ink);font-size:15px;display:flex;align-items:center;justify-content:center}
 
-/* section */
-.sec{margin-bottom:20px}
-.sec-h{font-size:13px;font-weight:600;color:var(--muted);margin:0 4px 8px}
-.group{background:var(--card);border-radius:var(--radius);overflow:hidden;
-  box-shadow:0 1px 3px rgba(45,33,25,.06)}
-.row{padding:13px 16px}
+.sec{margin-bottom:22px}
+.sec-h{font-size:13px;font-weight:600;color:var(--muted);margin:0 6px 9px;letter-spacing:.2px}
+.group{background:var(--card);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.row{padding:15px 18px}
 .row+.row{border-top:1px solid var(--line)}
-.row label.lbl{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
-.row label.lbl small{font-weight:400;color:var(--muted)}
-.tin{width:100%;border:none;background:transparent;font-size:16px;color:var(--ink);
-  font-family:inherit;padding:2px 0}
+.row label.lbl{display:block;font-size:15px;font-weight:600;margin-bottom:9px;letter-spacing:-.2px}
+.row label.lbl small{font-weight:400;color:var(--muted);font-size:13px}
+.tin{width:100%;border:none;background:transparent;font-size:16.5px;color:var(--ink);
+  font-family:inherit;padding:1px 0;letter-spacing:-.2px}
 .tin:focus{outline:none}
-.tin::placeholder{color:#c3b495}
-textarea.tin{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;
-  resize:vertical;line-height:1.6}
-select.tin{appearance:none}
+.tin::placeholder{color:#b5b5b0}
+textarea.tin{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;
+  resize:vertical;line-height:1.65}
 
-/* segmented kiểu iOS */
-.segwrap{padding:12px 16px}
-.seg{display:flex;background:#ece2cc;border-radius:12px;padding:3px;gap:2px}
-.seg button{flex:1;border:none;background:transparent;border-radius:9px;
-  padding:9px 2px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap}
-.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(45,33,25,.18)}
+.segwrap{padding:14px 16px}
+.seg{display:flex;background:var(--track);border-radius:15px;padding:4px;gap:2px}
+.seg button{flex:1;border:none;background:transparent;border-radius:11px;
+  padding:10px 2px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;letter-spacing:-.1px}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .seg button:active{transform:scale(.97)}
 
-/* chọn ngày tuần */
-.wdays{display:flex;gap:8px;padding:4px 16px 14px}
-.wdays button{flex:1;aspect-ratio:1;max-width:46px;border-radius:50%;border:1px solid var(--line);
-  background:transparent;font-size:13px;font-weight:700;color:var(--muted)}
-.wdays button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.wdays{display:flex;gap:9px;padding:2px 0 4px}
+.wdays button{flex:1;aspect-ratio:1;border-radius:50%;border:1px solid var(--line);
+  background:transparent;font-size:13px;font-weight:700;color:var(--muted);max-width:48px}
+.wdays button.on{background:var(--black);border-color:var(--black);color:#fff}
 
-/* hàng toggle */
-.trowline{display:flex;align-items:center;justify-content:space-between;padding:13px 16px}
-.trowline .lbl{font-size:15px;font-weight:600}
+.tline{display:flex;align-items:center;justify-content:space-between;padding:15px 18px}
+.tline .lbl{font-size:15.5px;font-weight:600;letter-spacing:-.2px}
 
-/* nút */
-.cta{width:100%;background:var(--accent);color:#fff;border:none;border-radius:14px;
-  padding:15px;font-size:16.5px;font-weight:700;margin-top:4px;
-  box-shadow:0 4px 14px rgba(153,101,31,.32)}
-.cta:active{transform:scale(.98)}
-.ghost{width:100%;background:transparent;border:1.5px solid var(--accent);color:var(--accent);
-  border-radius:14px;padding:12px;font-size:15px;font-weight:600;margin-top:10px}
-.del{width:100%;background:none;border:none;color:var(--err);font-size:15px;
-  padding:16px;margin-top:2px}
-.hint{font-size:12.5px;color:var(--muted);line-height:1.7;margin:16px 4px 0}
+.cta{width:100%;background:var(--black);color:#fff;border:none;border-radius:17px;
+  padding:17px;font-size:16.5px;font-weight:700;margin-top:6px;letter-spacing:-.2px}
+.cta:active{transform:scale(.985)}
+.ghost{width:100%;background:var(--card);border:1px solid var(--line);color:var(--ink);
+  border-radius:17px;padding:14px;font-size:15px;font-weight:600;margin-top:11px}
+.del{width:100%;background:none;border:none;color:var(--err);font-size:15px;font-weight:500;
+  padding:18px;margin-top:2px}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.7;margin:18px 6px 0}
 .hidden{display:none!important}
 @media(min-width:600px){
-  .backdrop{align-items:center;padding:24px}
-  .sheet{border-radius:22px;max-height:88vh}
+  .backdrop{align-items:center;padding:28px}
+  .sheet{border-radius:26px;max-height:90vh}
 }
 </style>
 </head>
@@ -132,7 +125,7 @@ select.tin{appearance:none}
   <p id="subtitle">Tác vụ tự chạy theo lịch bạn đặt</p>
 </div>
 <div id="taskList"></div>
-<button class="fab" onclick="openSheet()" aria-label="Thêm">+</button>
+<button class="fab" onclick="openSheet()" aria-label="Thêm tác vụ">+</button>
 
 <div id="sheet" class="backdrop hidden" onclick="if(event.target===this)closeSheet()">
   <div class="sheet" role="dialog" aria-modal="true">
@@ -148,7 +141,7 @@ select.tin{appearance:none}
           <label class="lbl" for="fName">Tên tác vụ</label>
           <input class="tin" type="text" id="fName" placeholder="VD: Gọi API báo cáo sáng" maxlength="80">
         </div>
-        <div class="trowline">
+        <div class="tline">
           <span class="lbl">Bật tác vụ</span>
           <span class="sw"><input type="checkbox" id="fEnabled" checked><span class="sl"></span></span>
         </div>
@@ -164,10 +157,9 @@ select.tin{appearance:none}
           <button data-v="notify">Thông báo</button>
         </div></div>
       </div>
-      <div class="group" id="boxHttp" style="margin-top:10px">
+      <div class="group" id="boxHttp" style="margin-top:12px">
         <div class="row">
-          <label class="lbl">Method</label>
-          <div class="seg" id="segMethod" style="margin:0">
+          <div class="seg" id="segMethod">
             <button data-v="GET" class="on">GET</button>
             <button data-v="POST">POST</button>
             <button data-v="PUT">PUT</button>
@@ -178,10 +170,10 @@ select.tin{appearance:none}
           <label class="lbl" for="fUrl">URL</label>
           <input class="tin" type="url" id="fUrl" placeholder="https://example.com/api"
             autocapitalize="off" autocomplete="off" spellcheck="false"
-            style="font-family:ui-monospace,Menlo,monospace;font-size:14px">
+            style="font-family:ui-monospace,Menlo,monospace;font-size:14.5px">
         </div>
         <div class="row">
-          <label class="lbl" for="fHeaders">Headers <small>— JSON, không bắt buộc</small></label>
+          <label class="lbl" for="fHeaders">Headers <small>· JSON, không bắt buộc</small></label>
           <textarea class="tin" id="fHeaders" rows="2" placeholder='{"Authorization": "Bearer xxx"}' spellcheck="false"></textarea>
         </div>
         <div class="row">
@@ -189,15 +181,15 @@ select.tin{appearance:none}
           <textarea class="tin" id="fBody" rows="3" placeholder='{"key": "value"}' spellcheck="false"></textarea>
         </div>
       </div>
-      <div class="group hidden" id="boxUrl" style="margin-top:10px">
+      <div class="group hidden" id="boxUrl" style="margin-top:12px">
         <div class="row">
           <label class="lbl" for="fOpenUrl">Link cần mở</label>
           <input class="tin" type="url" id="fOpenUrl" placeholder="https://example.com"
             autocapitalize="off" autocomplete="off" spellcheck="false"
-            style="font-family:ui-monospace,Menlo,monospace;font-size:14px">
+            style="font-family:ui-monospace,Menlo,monospace;font-size:14.5px">
         </div>
       </div>
-      <div class="group hidden" id="boxNotify" style="margin-top:10px">
+      <div class="group hidden" id="boxNotify" style="margin-top:12px">
         <div class="row">
           <label class="lbl" for="fMsg">Nội dung thông báo</label>
           <input class="tin" type="text" id="fMsg" placeholder="Đến giờ rồi!" maxlength="120">
@@ -215,7 +207,7 @@ select.tin{appearance:none}
           <button data-v="interval">Định kỳ</button>
         </div></div>
       </div>
-      <div class="group" style="margin-top:10px">
+      <div class="group" style="margin-top:12px">
         <div class="row" id="boxOnce">
           <label class="lbl" for="fOnce">Ngày giờ chạy</label>
           <input class="tin" type="datetime-local" id="fOnce">
@@ -226,12 +218,13 @@ select.tin{appearance:none}
         </div>
         <div class="row hidden" id="boxWeekly">
           <label class="lbl">Ngày trong tuần</label>
-          <div class="wdays" id="fDays" style="padding:2px 0 10px"></div>
+          <div class="wdays" id="fDays"></div>
+          <div style="height:12px"></div>
           <label class="lbl" for="fWeekly">Giờ chạy</label>
           <input class="tin" type="time" id="fWeekly" value="08:00">
         </div>
         <div class="row hidden" id="boxInterval">
-          <label class="lbl" for="fMinutes">Lặp lại mỗi <small>(phút, tối thiểu 15)</small></label>
+          <label class="lbl" for="fMinutes">Lặp lại mỗi <small>· phút, tối thiểu 15</small></label>
           <input class="tin" type="number" id="fMinutes" value="30" min="15" inputmode="numeric">
         </div>
       </div>
@@ -240,7 +233,7 @@ select.tin{appearance:none}
     <button class="cta" onclick="saveTask()">Lưu tác vụ</button>
     <button class="ghost" onclick="testNow()">▶&nbsp; Chạy thử ngay</button>
     <button class="del hidden" id="btnDelete" onclick="deleteTask()">Xóa tác vụ này</button>
-    <p class="hint" id="bgNote">Bản web chạy tác vụ khi đang mở trang. Muốn chạy ngầm 24/7 thì dùng bản chạy trên máy chủ (GitHub Actions).</p>
+    <p class="hint" id="bgNote">Bản web chạy khi đang mở trang. Muốn chạy ngầm 24/7, dùng bản chạy trên máy chủ (GitHub Actions).</p>
   </div>
 </div>
 <script src="app.js"></script>
