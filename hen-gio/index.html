@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hẹn giờ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#f5f1e8;color:#2d2119;font-family:-apple-system,Roboto,"Segoe UI",sans-serif;min-height:100vh}
+.hero{padding:28px 20px 14px}
+.hero h1{font-size:26px;font-weight:700}
+.hero p{font-size:13px;opacity:.65;margin-top:4px}
+#taskList{padding:6px 16px 90px}
+.task{background:#fffdf7;border:1px solid #d9cbb5;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.task-head{display:flex;align-items:center;gap:10px}
+.task-name{font-size:16px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task-meta{font-size:12.5px;opacity:.7;margin-top:6px;line-height:1.6}
+.task-result{font-size:12.5px;margin-top:6px}
+.ok{color:#1e7e34}.err{color:#c0392b}
+.task-actions{display:flex;gap:8px;margin-top:10px}
+.chip-btn{border:1px solid #d9cbb5;background:#f5f1e8;border-radius:20px;padding:6px 14px;font-size:13px;color:#2d2119}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#d9cbb5;border-radius:26px;transition:.2s}
+.slider:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fffdf7;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:#0f766e}
+.switch input:checked+.slider:before{transform:translateX(20px)}
+.empty{text-align:center;opacity:.55;padding:60px 20px;font-size:14px;line-height:1.8}
+.fab{position:fixed;right:20px;bottom:24px;width:56px;height:56px;border-radius:50%;background:#0f766e;color:#fff;font-size:30px;border:none;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:50}
+.sheet-backdrop{position:fixed;inset:0;background:rgba(45,33,25,.45);z-index:100;display:flex;align-items:flex-end}
+.sheet{background:#fffdf7;border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding:20px 20px 34px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+.sheet h2{font-size:18px;margin-bottom:16px}
+.f-row{margin-bottom:14px}
+.f-row label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8}
+.f-row input[type=text],.f-row input[type=url],.f-row input[type=number],.f-row input[type=time],.f-row input[type=datetime-local],.f-row textarea,.f-row select{width:100%;border:1px solid #d9cbb5;border-radius:10px;padding:10px 12px;font-size:15px;background:#fff;color:#2d2119;font-family:inherit}
+.f-row textarea{font-family:monospace;font-size:13px;resize:vertical}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:70px;border:1px solid #d9cbb5;background:#f5f1e8;border-radius:10px;padding:9px 4px;font-size:13px;color:#2d2119}
+.seg button.active{background:#0f766e;color:#fff;border-color:#0f766e}
+.days{display:flex;gap:6px}
+.days button{width:38px;height:38px;border-radius:50%;border:1px solid #d9cbb5;background:#f5f1e8;font-size:13px;color:#2d2119}
+.days button.active{background:#0f766e;color:#fff;border-color:#0f766e}
+.big-btn{width:100%;background:#0f766e;color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:600;margin-top:8px}
+.danger-link{display:block;width:100%;background:none;border:none;color:#c0392b;font-size:14px;padding:12px;margin-top:4px}
+.sheet-close{position:absolute;right:16px;top:14px;border:none;background:none;font-size:20px;color:#2d2119;opacity:.6}
+.hidden{display:none!important}
+.note{font-size:12px;opacity:.6;line-height:1.6;background:#f5f1e8;border-radius:10px;padding:10px 12px;margin-top:12px}
+.test-btn{width:100%;border:1px solid #0f766e;color:#0f766e;background:none;border-radius:12px;padding:11px;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>⏰ Hẹn giờ</h1>
+  <p id="subtitle">Chạy tác vụ theo lịch, kể cả khi tắt app (bản APK)</p>
+</div>
+<div id="taskList"></div>
+<button class="fab" onclick="openSheet()">+</button>
+
+<div id="sheet" class="sheet-backdrop hidden" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" style="position:relative">
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+    <h2 id="sheetTitle">Tác vụ mới</h2>
+    <div class="f-row"><label>Tên tác vụ</label><input type="text" id="fName" placeholder="VD: Gọi API báo cáo sáng"></div>
+    <div class="f-row"><label>Loại tác vụ</label>
+      <div class="seg" id="segAction">
+        <button data-v="http" class="active">Gọi API</button>
+        <button data-v="open_url">Mở link</button>
+        <button data-v="notify">Thông báo</button>
+      </div>
+    </div>
+    <div id="boxHttp">
+      <div class="f-row"><label>Method</label>
+        <div class="seg" id="segMethod">
+          <button data-v="GET" class="active">GET</button>
+          <button data-v="POST">POST</button>
+          <button data-v="PUT">PUT</button>
+          <button data-v="DELETE">DELETE</button>
+        </div>
+      </div>
+      <div class="f-row"><label>URL</label><input type="url" id="fUrl" placeholder="https://example.com/api"></div>
+      <div class="f-row"><label>Headers (JSON, tùy chọn)</label><textarea id="fHeaders" rows="2" placeholder='{"Authorization":"Bearer xxx"}'></textarea></div>
+      <div class="f-row"><label>Body (tùy chọn)</label><textarea id="fBody" rows="3" placeholder='{"key":"value"}'></textarea></div>
+    </div>
+    <div id="boxUrl" class="hidden">
+      <div class="f-row"><label>Link cần mở</label><input type="url" id="fOpenUrl" placeholder="https://example.com"></div>
+    </div>
+    <div id="boxNotify" class="hidden">
+      <div class="f-row"><label>Nội dung thông báo</label><input type="text" id="fMsg" placeholder="Đến giờ rồi!"></div>
+    </div>
+    <div class="f-row"><label>Lịch chạy</label>
+      <div class="seg" id="segSched">
+        <button data-v="once" class="active">Một lần</button>
+        <button data-v="daily">Hằng ngày</button>
+        <button data-v="weekly">Hằng tuần</button>
+        <button data-v="interval">Định kỳ</button>
+      </div>
+    </div>
+    <div id="boxOnce"><div class="f-row"><label>Ngày giờ chạy</label><input type="datetime-local" id="fOnce"></div></div>
+    <div id="boxDaily" class="hidden"><div class="f-row"><label>Giờ chạy mỗi ngày</label><input type="time" id="fDaily" value="08:00"></div></div>
+    <div id="boxWeekly" class="hidden">
+      <div class="f-row"><label>Các ngày trong tuần</label><div class="days" id="fDays"></div></div>
+      <div class="f-row"><label>Giờ chạy</label><input type="time" id="fWeekly" value="08:00"></div>
+    </div>
+    <div id="boxInterval" class="hidden"><div class="f-row"><label>Mỗi bao nhiêu phút</label><input type="number" id="fMinutes" value="30" min="15"></div></div>
+    <div class="f-row"><label style="display:flex;align-items:center;gap:10px"><span>Bật tác vụ</span>
+      <span class="switch"><input type="checkbox" id="fEnabled" checked><span class="slider"></span></span></label></div>
+    <button class="test-btn" id="btnTest" onclick="testNow()">▶ Chạy thử ngay</button>
+    <button class="big-btn" onclick="saveTask()">Lưu tác vụ</button>
+    <button class="danger-link hidden" id="btnDelete" onclick="deleteTask()">🗑 Xóa tác vụ này</button>
+    <div class="note" id="bgNote">Trên bản web, tác vụ chỉ chạy khi đang mở trang. Bản APK chạy nền thật kể cả khi tắt app.</div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
